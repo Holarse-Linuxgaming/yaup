@@ -1,0 +1,9 @@
+# List of source files containing translatable strings.
+
+src/main.c
+src/yaup.c
+src/listboxthings.c
+[type: gettext/glade] src/yaup.ui
+src/callbacks.c
+src/upnpcommunication.c
+[type: gettext/glade] src/gtk/menus.ui

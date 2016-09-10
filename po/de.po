@@ -1,0 +1,249 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-09-02 17:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/yaup.c:174
+msgid "Searching for available devices in the network…"
+msgstr "Suche verfügbare Geräte im Netzwerk…"
+
+#. TODO: Show notification with button to show settings
+#: ../src/yaup.c:224 ../src/yaup.ui.h:15 ../src/gtk/menus.ui.h:2
+msgid "Preferences"
+msgstr "Einstellungen"
+
+#: ../src/listboxthings.c:217 ../src/yaup.ui.h:1
+msgid "Use different internal port"
+msgstr "Benutze anderen internen Port"
+
+#: ../src/listboxthings.c:218
+msgid "Use different IP to redirect to"
+msgstr "Setze die Portfreigabe für eine andere IP"
+
+#: ../src/listboxthings.c:220
+msgid "Activate this row."
+msgstr "Aktiviere diese Zeile."
+
+#: ../src/listboxthings.c:221
+msgid "Set a description for this row."
+msgstr "Setze eine Beschreibung für diese Reihe."
+
+#: ../src/listboxthings.c:222
+msgid "Set a different IP than your own for the portmapping."
+msgstr "Setze eine andere IP als die eigene für die Portweiterleitung."
+
+#: ../src/listboxthings.c:223
+msgid "Set a different internal port than the external port."
+msgstr "Setze einen anderen internen Port als der externe Port."
+
+#: ../src/listboxthings.c:224
+msgid "Set the port for the portmapping."
+msgstr "Setze den Port für die Portweiterleitung."
+
+#: ../src/listboxthings.c:225
+msgid ""
+"Set the protocol for the mapping.\n"
+"Most of the time you'd probably want 'TCP & UDP'."
+msgstr ""
+"Setze das Protokoll für die Portweiterleitung.\n"
+"Meistens wird hier 'TCP & UDP' verwendet werden."
+
+#: ../src/listboxthings.c:226
+msgid "Show options which influence this row."
+msgstr "Zeige Optionen, welche diese Zeile beeinflussen."
+
+#: ../src/listboxthings.c:227
+msgid "Show advanced options for this portmapping."
+msgstr "Zeige erweiterte Funktionen für diese Portweiterleitung."
+
+#: ../src/listboxthings.c:228
+msgid "Move this row one line up."
+msgstr "Bewege diese Zeile nach oben."
+
+#: ../src/listboxthings.c:229
+msgid "Move this row one line down."
+msgstr "Bewege diese Zeile nach unten."
+
+#: ../src/listboxthings.c:230
+msgid "Duplicate this row."
+msgstr "Kopiere diese Zeile."
+
+#: ../src/listboxthings.c:231
+msgid "Remove this row from the list."
+msgstr "Entferne diese Zeile."
+
+#: ../src/listboxthings.c:232
+msgid "Activate the option to specify a different internal port."
+msgstr "Aktiviere die Option einen anderen internen Port zu benutzen."
+
+#: ../src/listboxthings.c:233
+msgid "Activate the option to specify a different IP."
+msgstr "Aktiviere die Option eine andere IP anzugeben."
+
+#: ../src/listboxthings.c:295
+msgid "Description"
+msgstr "Beschreibung"
+
+#: ../src/listboxthings.c:296
+msgid "127.0.0.1"
+msgstr "127.0.0.1"
+
+#: ../src/yaup.ui.h:2
+msgid "Use different IP"
+msgstr "Benutze anderen internen Port"
+
+#: ../src/yaup.ui.h:3
+msgid "Move selected item up."
+msgstr "Bewege die aktivierte Zeile nach oben."
+
+#: ../src/yaup.ui.h:4
+msgid "Move selected item down."
+msgstr "Bewege die aktivierte Zeile nach unten."
+
+#: ../src/yaup.ui.h:5
+msgid "Duplicate an item in the list."
+msgstr "Kopiere eine Zeile."
+
+#: ../src/yaup.ui.h:6
+msgid "Remove an item from the list."
+msgstr "Entferne eine Zeile."
+
+#: ../src/yaup.ui.h:7
+msgid "Refresh opened UPnP ports."
+msgstr "Aktualisiere die geöffneten UPnP Ports."
+
+#: ../src/yaup.ui.h:8
+msgid "Add an item to the list."
+msgstr "Fügt eine Zeile ein."
+
+#: ../src/yaup.ui.h:9 ../src/gtk/menus.ui.h:3
+msgid "About"
+msgstr "Über"
+
+#: ../src/yaup.ui.h:10
+msgid ""
+"This is Yaup - Yet Another UPnP Portmapper.\n"
+"It's a GTK+ frontend for miniupnpc."
+msgstr ""
+"Dies ist Yaup - Yet Another UPnP Portmapper. (Noch ein weiterer UPnP-"
+"Portmapper)\n"
+"Es ist eine GTK+-Oberfläche für miniupnpc."
+
+#: ../src/yaup.ui.h:12
+msgid "Lucki"
+msgstr "Lucki"
+
+#: ../src/yaup.ui.h:13
+msgid "Close"
+msgstr "Schließen"
+
+#: ../src/yaup.ui.h:14
+msgid "Close this dialog."
+msgstr "Schließe diesen Dialog."
+
+#: ../src/yaup.ui.h:16
+msgid "Specify ControlURL"
+msgstr "Definiere ControlURL"
+
+#: ../src/yaup.ui.h:17
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+#: ../src/callbacks.c:294
+msgid "No description found"
+msgstr "Keine Beschreibung gefunden"
+
+#: ../src/callbacks.c:361
+#, c-format
+msgid "Activated external %i to internal %i for %s to %s"
+msgstr "Portweiterleitung von extern %i zu intern %i für %s zu %s aktiviert"
+
+#: ../src/callbacks.c:377
+#, c-format
+msgid "Activating TCP failed with error code %i"
+msgstr "Aktivierung von TCP mit Code %i fehlgeschlagen"
+
+#: ../src/callbacks.c:393
+#, c-format
+msgid "Activating UDP failed with error code %i"
+msgstr "Aktivierung von UDP mit Code %i fehlgeschlagen"
+
+#: ../src/callbacks.c:409
+#, c-format
+msgid "Activating failed with error %i and error %i"
+msgstr "Aktivierung mit Code %i und %i fehlgeschlagen"
+
+#: ../src/callbacks.c:420
+#, c-format
+msgid "Activating failed with error %i"
+msgstr "Aktivierung mit Code %i fehlgeschlagen"
+
+#: ../src/callbacks.c:469
+#, c-format
+msgid "Removed external %i to internal %i for %s"
+msgstr "Portweiterleitung von extern %i zu intern %i für %s deaktiviert"
+
+#: ../src/callbacks.c:484
+#, c-format
+msgid "Removing TCP failed with error code %i"
+msgstr "Entfernen von TCP mit Code %i fehlgeschlagen"
+
+#: ../src/callbacks.c:500
+#, c-format
+msgid "Removing UDP failed with error code %i"
+msgstr "Entfernen von UDP mit Code %i fehlgeschlagen"
+
+#: ../src/callbacks.c:517
+#, c-format
+msgid "Removing failed with error %i and error %i"
+msgstr "Entfernen mit Code %i und %i fehlgeschlagen"
+
+#: ../src/callbacks.c:531
+#, c-format
+msgid "Port and Protocol are already in use"
+msgstr "Port und Protokoll sind bereits in Benutzung"
+
+#: ../src/upnpcommunication.c:189
+#, c-format
+msgid "Found port forwarding for %s with protocol %s: %s->%s"
+msgstr "Portweiterleitung für %s mit Protokoll %s gefunden: %s->%s"
+
+#: ../src/gtk/menus.ui.h:1
+msgid "Reload"
+msgstr "Aktualisieren"
+
+#: ../src/gtk/menus.ui.h:4
+msgid "Quit"
+msgstr "Beenden"
+
+#~ msgid "?"
+#~ msgstr "?"
+
+#~ msgid "Enabled"
+#~ msgstr "Aktiviert"
+
+#~ msgid "Internal port"
+#~ msgstr "Interner Port"
+
+#~ msgid "External port"
+#~ msgstr "Externer Port"
+
+#~ msgid "Protocol"
+#~ msgstr "Protokoll"
+
+#~ msgid "Name"
+#~ msgstr "Name"
