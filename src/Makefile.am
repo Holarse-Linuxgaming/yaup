@@ -1,7 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-## Created by Anjuta
-
 
 uidir = $(pkgdatadir)/ui
 ui_DATA = yaup.ui \
