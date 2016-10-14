@@ -7,6 +7,7 @@ Mostly used for IPv4.
 ## Table of Contents
 1. [Features](#features)
 2. [How to do things with this code](#how-to-do-things-with-this-code)
+    1. [Dependencies](#dependencies)
     1. [How to build](#how-to-build)
     2. [How to install](#how-to-install)
     2. [How to uninstall](#how-to-uninstall)
@@ -36,6 +37,9 @@ Mostly used for IPv4.
 * What are you still doing here? Build, install and use it!
 
 ## How to do things with this code
+### Dependencies
+You'll need `gtk3` and `miniupnpc` among the building tools.
+
 ### How to build
 ~~~
 $ git clone https://github.com/Holarse-Linuxgaming/yaup.git
