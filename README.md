@@ -61,7 +61,7 @@ $ make
 ~~~
 [![asciicast](https://asciinema.org/a/8kjmi4j3235uu5giikies85e0.png)](https://asciinema.org/a/8kjmi4j3235uu5giikies85e0)
 
-##Screenshots
+## Screenshots
 ![Overview](overview-light.png)
 ![Overview](overview.png)
 
