@@ -108,7 +108,13 @@ void
 on_add_clicked (GtkButton *button,
                 Yaup      *yaup)
 {
-	add_list_item (yaup, -1);
+	Row *row;
+	row = get_clean_list_box_row (yaup, -1, NULL);
+
+	row = add_row_to_list_box(yaup, -1, row);
+
+	row = add_row_to_gslist(yaup, row);
+
 }
 
 void
@@ -136,8 +142,15 @@ on_duplicate_clicked (GtkButton *button,
 													GTK_WIDGET(gtk_widget_get_parent(
 													GTK_WIDGET(button))))))))))));
 
-  add_list_item_from_config(FALSE, row->name, row->iport, row->ip,
-														row->oport, row->protocol, row->index + 1, yaup);
+  add_list_item_from_config(FALSE,
+														row->name,
+														row->iport,
+														row->ip,
+														row->oport,
+														row->oport2,
+														row->protocol,
+														row->index + 1,
+														yaup);
 }
 
 void on_remove_clicked (GtkButton *button,
@@ -448,7 +461,8 @@ on_listbox_row_selected (GtkListBox    *listbox,
                          GtkListBoxRow *row,
                          Yaup          *yaup)
 {
-	/* this shouldn't be relevant since i've disabled selections */
+	/* this shouldn't be relevant anymore since i've disabled selections
+	 * For drag&drop this can become useful again*/
 
   Row *arow;
 
@@ -527,9 +541,12 @@ on_switch_state_set (GtkSwitch *widget,
     {
 		  row2 = get_port_in_use (row,yaup);
 
-      if(state == TRUE && (row2 == NULL
-                           || (row2 != NULL
-                               && row2->enabled == FALSE)))
+      if(state == TRUE
+				 && (row2 == NULL
+						 || (row2 != NULL
+								 && row2->enabled == FALSE)
+						 )
+				 )
         {
 					GTask *task;
 
@@ -540,7 +557,7 @@ on_switch_state_set (GtkSwitch *widget,
 					g_object_unref (task);
 
         }
-      else if ( state == FALSE && row2 == NULL)
+      else if (state == FALSE && row2 == NULL)
         {
 					GTask *task;
 
@@ -551,7 +568,7 @@ on_switch_state_set (GtkSwitch *widget,
 					g_object_unref (task);
 
         }
-      else if ( row2 != NULL )
+      else if (row2 != NULL )
         {
 			    disable_row (row, yaup);
 
@@ -560,6 +577,7 @@ on_switch_state_set (GtkSwitch *widget,
           gtk_statusbar_push(statusbar,
                              yaup->statusbar_error_id,
                              str);
+					gtk_spinner_stop(spinner);
         }
       else
 		    {
@@ -637,6 +655,31 @@ on_check_ip_toggled (GtkToggleButton *togglebutton,
 		}
 }
 
+void on_check_range_toggled(GtkToggleButton *togglebutton,
+                            Yaup            *yaup)
+{
+	Row   *row;
+
+	row = get_list_box_row(yaup,
+												 GTK_LIST_BOX_ROW(gtk_widget_get_parent(
+													GTK_WIDGET(gtk_widget_get_parent(
+													GTK_WIDGET(gtk_popover_get_relative_to(
+													GTK_POPOVER(gtk_widget_get_parent(
+													GTK_WIDGET(gtk_widget_get_parent(
+													GTK_WIDGET(togglebutton))))))))))));
+
+	if(gtk_toggle_button_get_active(togglebutton))
+		{
+			row->oport2_enabled = TRUE;
+			gtk_widget_set_sensitive(GTK_WIDGET(row->ospin2), TRUE);
+		}
+	else
+		{
+			row->oport2_enabled = FALSE;
+			gtk_widget_set_sensitive(GTK_WIDGET(row->ospin2), FALSE);
+		}
+}
+
 void
 on_check_control_url_toggled (GtkToggleButton *togglebutton,
                               Yaup            *yaup)
@@ -673,6 +716,42 @@ on_ospin_button_value_changed(GtkSpinButton *spin_button,
 		{
 			gtk_spin_button_set_value(row->ispin, row->oport);
 			row->iport = row->oport;
+		}
+
+	if(!row->oport2_enabled)
+		{
+			gtk_spin_button_set_value(row->ospin2, row->oport);
+			row->oport2 = row->oport;
+		}
+	else if(row->oport2_enabled && row->oport > row->oport2)
+		{
+			gtk_spin_button_set_value(row->ospin2, row->oport);
+			row->oport2 = row->oport;
+		}
+}
+
+void on_ospin2_button_value_changed(GtkSpinButton *spin_button,
+                                    Yaup          *yaup)
+{
+	Row   *row;
+
+	row = get_list_box_row(yaup,
+												 GTK_LIST_BOX_ROW(gtk_widget_get_parent
+																					(GTK_WIDGET
+																					 (gtk_widget_get_parent
+																						(GTK_WIDGET(spin_button)
+																						 )
+																						)
+																					 )
+																					)
+												 );
+
+	row->oport2 = gtk_spin_button_get_value_as_int(row->ospin2);
+
+	if(row->oport2_enabled && row->oport2 < row->oport)
+		{
+			gtk_spin_button_set_value(row->ospin, row->oport2);
+			row->oport = row->oport2;
 		}
 }
 

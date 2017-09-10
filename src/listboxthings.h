@@ -23,6 +23,10 @@
 Row * get_list_box_row (Yaup          *,
                         GtkListBoxRow *);
 
+Row * get_clean_list_box_row (Yaup *yaup,
+                              int   index,
+                              Row  *row);
+
 Row * add_list_item_from_row (Row  *row,
                               Yaup *yaup,
                               int   index);
@@ -32,24 +36,37 @@ Row * add_list_item_from_config (gboolean  enabled,
                                  gdouble   iport,
                                  char      *ip,
                                  gdouble   oport,
+																 gdouble   oport2,
                                  char     *protocol,
                                  int       index,
                                  Yaup     *yaup);
 
-void set_list_box_row (Yaup     *yaup,
-                       Row      *row,
-                       gboolean  enabled,
-                       char     *name,
-                       gdouble   iport,
-                       char     *ip,
-                       gdouble   oport,
-                       char     *protocol);
+Row * add_row_to_list_box(Yaup *yaup,
+                          int   index,
+                          Row  *row);
 
-Row * add_list_item (Yaup *yaup,
-                     int   index);
+Row * add_row_to_gslist(Yaup *yaup,
+                        Row  *row);
 
-Row * get_exact_row (Row  *row,
-                     Yaup *yaup);
+Row * set_list_box_row (Yaup     *yaup,
+                        Row      *row,
+                        gboolean  enabled,
+                        char     *name,
+                        gdouble   iport,
+                        char     *ip,
+                        gdouble   oport,
+                        gdouble   oport2,
+                        char     *protocol,
+                        int       index);
+
+Row *
+set_list_widget_values(Yaup *yaup,
+											 Row *row);
+
+// These don't work, I don't know why. TODO: Figure it out.
+/* gint find_same_row(gconstpointer, gconstpointer); */
+/* gint find_opposite_row(gconstpointer, gconstpointer); */
+/* gint find_row_with_both(gconstpointer, gconstpointer); */
 
 void activate_row (Row  *row,
                    Yaup *yaup);
@@ -60,12 +77,6 @@ void disable_row (Row  *row,
 Row * get_port_in_use (Row  *row,
                        Yaup *yaup);
 
-Row * get_counterpart (Row  *row,
-                       Yaup *yaup);
-
-Row * get_udp_tcp (Row  *row,
-                   Yaup *yaup);
-
 void remove_list_item (Row  *row,
                        Yaup *yaup);
 
@@ -73,3 +84,5 @@ void delete_row (GtkWidget *widget,
                  gpointer   data);
 
 void refresh_listbox (Yaup *yaup);
+
+void clean_up_list_box(Yaup *yaup);

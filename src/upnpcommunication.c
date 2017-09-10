@@ -250,7 +250,8 @@ upnp_list_redirections_finish (GObject      *source_object,
 	GET_UI_ELEMENT (GtkButton, add);
 	GET_UI_ELEMENT (GtkStatusbar, statusbar);
 
-	refresh_listbox(yaup);
+	debug_print("Refresh listbox and combine\n");
+	clean_up_list_box(yaup);
 
 	/* printf("Aktiviere Buttons und Liste\n"); */
 	/* gtk_widget_set_sensitive(GTK_WIDGET(reload),TRUE); */
@@ -292,9 +293,16 @@ upnp_list_redirections(GTask        *task,
 		rHost[0] = '\0'; enabled[0] = '\0';
 		duration[0] = '\0'; desc[0] = '\0';
 		extPort[0] = '\0'; intPort[0] = '\0'; intClient[0] = '\0';
-		r = UPNP_GetGenericPortMappingEntry(yaup->controlURL, yaup->igddata.first.servicetype,
-																				index, extPort, intClient, intPort,
-																				protocol, desc, enabled, rHost,
+		r = UPNP_GetGenericPortMappingEntry(yaup->controlURL,
+																				yaup->igddata.first.servicetype,
+																				index,
+																				extPort,
+																				intClient,
+																				intPort,
+																				protocol,
+																				desc,
+																				enabled,
+																				rHost,
 																				duration);
 		if(r==0)
 			{
@@ -317,154 +325,179 @@ upnp_list_redirections(GTask        *task,
 				gtk_statusbar_push (statusbar,yaup->statusbar_notice_id,notice);
 				g_timeout_add_seconds (5, statusbar_refresh_notice, yaup);
 
-				Row *new_row;
-				Row *old_row;
-				Row *counterpart;
-				Row *tcp_udp;
-
 		  	debug_print("Composing row for id %i\n", i);
 
-				new_row = g_new (Row, 1);
-				set_list_box_row(yaup, new_row, FALSE, desc, (int) strtol(intPort, (char **)NULL, 10), intClient, (int) strtol(extPort, (char **)NULL, 10), protocol);
+				Row *row;
+				row = get_clean_list_box_row(yaup, -1, NULL);
+				row = set_list_box_row(yaup,
+															 row,
+															 TRUE,
+															 desc,
+															 (int) strtol(intPort, (char **)NULL, 10),
+															 intClient,
+															 (int) strtol(extPort, (char **)NULL, 10),
+															 (int) strtol(extPort, (char **)NULL, 10),
+															 protocol,
+															 -1);
+				row = set_list_widget_values(yaup, row);
+				row = add_row_to_list_box(yaup, -1, row);
+				row = add_row_to_gslist(yaup, row);
 
-				debug_print("looking for %s in list\n", new_row->name);
+		/* 		Row *new_row; */
+		/* 		Row *old_row; */
+		/* 		Row *counterpart; */
+		/* 		Row *tcp_udp; */
+		/* 		Row *follow_up; */
 
+		/* 		debug_print("looking for %s in list\n", new_row->name); */
 
-				debug_print("Looking for available row with same specs\n");
-				old_row = get_exact_row (new_row, yaup);
+		/* 		debug_print("Looking for available row with same specs\n"); */
+		/* 		old_row = get_exact_row (new_row, yaup); */
 
-				debug_print("Looking for available row opposite protocol\n");
-				counterpart = get_counterpart(new_row, yaup);
+		/* 		debug_print("Looking for available row opposite protocol\n"); */
+		/* 		counterpart = get_counterpart(new_row, yaup); */
 
-				debug_print("Looking for available row with both protocols\n");
-				tcp_udp = get_udp_tcp (new_row, yaup);
+		/* 		debug_print("Looking for available row with both protocols\n"); */
+		/* 		tcp_udp = get_udp_tcp (new_row, yaup); */
+
+		/* 		debug_print("Looking for a range\n"); */
+		/* 		follow_up = get_follow_up(new_row, yaup); */
 
 				/* if(new_row == NULL) */
 				/* 	{ */
 				/* 		debug_print("Something's wrong here, bad things happened!"); */
 				/* 	} */
 
-				if( counterpart == NULL && old_row != NULL && tcp_udp == NULL)
-					{
-						debug_print("Found existing row\n");
-						old_row->enabled = TRUE;
+		/* 		if( counterpart == NULL && old_row != NULL && tcp_udp == NULL) */
+		/* 			{ */
+		/* 				debug_print("Found existing row\n"); */
+		/* 				old_row->enabled = TRUE; */
 
-					}
-				else if( counterpart != NULL && old_row == NULL && tcp_udp == NULL)
-					{
-						// set combo to 0 on counterpart & delete new
-						debug_print("Found counterpart\n");
+		/* 			} */
+		/* 		else if( counterpart != NULL && old_row == NULL && tcp_udp == NULL) */
+		/* 			{ */
+		/* 				// set combo to 0 on counterpart & delete new */
+		/* 				debug_print("Found counterpart\n"); */
 
-						if(counterpart->enabled)
-							{
-								debug_print("Setting counterpart to both protocols\n");
-								strcpy(counterpart->protocol, "TCP & UDP");
-								counterpart->enabled = TRUE;
+		/* 				if(counterpart->enabled) */
+		/* 					{ */
+		/* 						debug_print("Setting counterpart to both protocols\n"); */
+		/* 						strcpy(counterpart->protocol, "TCP & UDP"); */
+		/* 						counterpart->enabled = TRUE; */
 
-							}
-						else
-						 {
-							 debug_print("Counterpart is disabled, activating new row\n");
-							 new_row->enabled = TRUE;
-							 yaup->rows = g_slist_append (yaup->rows,new_row);
+		/* 					} */
+		/* 				else */
+		/* 				 { */
+		/* 					 debug_print("Counterpart is disabled, activating new row\n"); */
+		/* 					 new_row->enabled = TRUE; */
+		/* 					 yaup->rows = g_slist_append (yaup->rows,new_row); */
 
-						 }
-					}
-				else if(counterpart != NULL
-								&& old_row != NULL
-								&& tcp_udp == NULL)
-					{
-						 // set combo to 0 on counterpart & delete new +  old
+		/* 				 } */
+		/* 			} */
+		/* 		else if(counterpart != NULL */
+		/* 						&& old_row != NULL */
+		/* 						&& tcp_udp == NULL) */
+		/* 			{ */
+		/* 				 // set combo to 0 on counterpart & delete new +  old */
 
-						 debug_print("Found counterpart & old row\n");
-						if(counterpart->enabled)
-							{
-								debug_print("Counterpart enabled, setting counterpart to both protocols and delete old row\n");
-								strcpy(counterpart->protocol, "TCP & UDP");
-								yaup->rows = g_slist_remove (yaup->rows, old_row);
-							}
-						else
-							{
-								debug_print("Counterpart diabled, activating old row\n");
-								old_row->enabled = TRUE;
-							}
-					}
-				else if(counterpart != NULL && old_row == NULL && tcp_udp != NULL)
-					{
-						// TCP & UDP available
+		/* 				 debug_print("Found counterpart & old row\n"); */
+		/* 				if(counterpart->enabled) */
+		/* 					{ */
+		/* 						debug_print("Counterpart enabled, setting counterpart to both protocols and delete old row\n"); */
+		/* 						strcpy(counterpart->protocol, "TCP & UDP"); */
+		/* 						yaup->rows = g_slist_remove (yaup->rows, old_row); */
+		/* 					} */
+		/* 				else */
+		/* 					{ */
+		/* 						debug_print("Counterpart disabled, activating old row\n"); */
+		/* 						old_row->enabled = TRUE; */
+		/* 					} */
+		/* 			} */
+		/* 		else if(counterpart != NULL && old_row == NULL && tcp_udp != NULL) */
+		/* 			{ */
+		/* 				// TCP & UDP available */
 
-						 debug_print("Found counterpart & tcp_udp\n");
-						if(counterpart->enabled)
-							{
-								debug_print("Counterpart enabled, deleting counterpart, activating tcp_udp\n");
-								tcp_udp->enabled = TRUE;
-								yaup->rows = g_slist_remove (yaup->rows, counterpart);
-							}
-					}
-				else if(counterpart != NULL && old_row != NULL && tcp_udp != NULL)
-					{
-						debug_print("Found counterpart, old row and tcp_udp\n");
-						if(counterpart->enabled)
-							{
-								debug_print("Counterpart enabled, deleting counterpart and old row, acitvating tcp_udp\n");
-								tcp_udp->enabled = TRUE;
-								yaup->rows = g_slist_remove (yaup->rows, old_row);
-								yaup->rows = g_slist_remove (yaup->rows, counterpart);
-							}
-						else if(!tcp_udp->enabled)
-							{
-								debug_print("Counterpart disabled, tcp_udp disabled, activating old row\n");
-								old_row->enabled = TRUE;
-							}
-						else
-							{
-								 debug_print("Counterpart and tcp_udp disabled, activating old row\n");
-								old_row->enabled = TRUE;
-							}
-					}
-				else if(counterpart == NULL && old_row != NULL && tcp_udp != NULL)
-					{
-						debug_print("Found old row and tcp_udp\n");
+		/* 				 debug_print("Found counterpart & tcp_udp\n"); */
+		/* 				if(counterpart->enabled) */
+		/* 					{ */
+		/* 						debug_print("Counterpart enabled, deleting counterpart, activating tcp_udp\n"); */
+		/* 						tcp_udp->enabled = TRUE; */
+		/* 						yaup->rows = g_slist_remove (yaup->rows, counterpart); */
+		/* 					} */
+		/* 			} */
+		/* 		else if(counterpart != NULL && old_row != NULL && tcp_udp != NULL) */
+		/* 			{ */
+		/* 				debug_print("Found counterpart, old row and tcp_udp\n"); */
+		/* 				if(counterpart->enabled) */
+		/* 					{ */
+		/* 						debug_print("Counterpart enabled, deleting counterpart and old row, acitvating tcp_udp\n"); */
+		/* 						tcp_udp->enabled = TRUE; */
+		/* 						yaup->rows = g_slist_remove (yaup->rows, old_row); */
+		/* 						yaup->rows = g_slist_remove (yaup->rows, counterpart); */
+		/* 					} */
+		/* 				else if(!tcp_udp->enabled) */
+		/* 					{ */
+		/* 						debug_print("Counterpart disabled, tcp_udp disabled, activating old row\n"); */
+		/* 						old_row->enabled = TRUE; */
+		/* 					} */
+		/* 				else */
+		/* 					{ */
+		/* 						 debug_print("Counterpart and tcp_udp disabled, activating old row\n"); */
+		/* 						old_row->enabled = TRUE; */
+		/* 					} */
+		/* 			} */
+		/* 		else if(counterpart == NULL && old_row != NULL && tcp_udp != NULL) */
+		/* 			{ */
+		/* 				debug_print("Found old row and tcp_udp\n"); */
 
-						if(!tcp_udp->enabled
-					  && strcmp(old_row->protocol, tcp_udp->protocol) != 0)
-							{
-								debug_print("tcp_udp different old row and disabled, activating old row\n");
-								old_row->enabled = TRUE;
-							}
-						else
-							{
-								debug_print("tcp_udp avtivated and same as old_row, activating tcp_udp, deleting old row\n");
-								tcp_udp->enabled = TRUE;
-								yaup->rows = g_slist_remove (yaup->rows, old_row);
-							}
-					}
-				else if(counterpart == NULL && old_row == NULL && tcp_udp != NULL)
-					{
+		/* 				if(!tcp_udp->enabled */
+		/* 			  && strcmp(old_row->protocol, tcp_udp->protocol) != 0) */
+		/* 					{ */
+		/* 						debug_print("tcp_udp different old row and disabled, activating old row\n"); */
+		/* 						old_row->enabled = TRUE; */
+		/* 					} */
+		/* 				else */
+		/* 					{ */
+		/* 						debug_print("tcp_udp avtivated and same as old_row, activating tcp_udp, deleting old row\n"); */
+		/* 						tcp_udp->enabled = TRUE; */
+		/* 						yaup->rows = g_slist_remove (yaup->rows, old_row); */
+		/* 					} */
+		/* 			} */
+		/* 		else if(counterpart == NULL && old_row == NULL && tcp_udp != NULL) */
+		/* 			{ */
 						/* do nothing */
-						debug_print("Found tcp_udp\n");
+		/* 				debug_print("Found tcp_udp\n"); */
 
-						if(!tcp_udp->enabled)
-							{
-								debug_print("tcp_udp disabled, activating new_row\n");
-								new_row->enabled = TRUE;
-								yaup->rows = g_slist_append (yaup->rows,new_row);
-							}
-						else
-							{
+		/* 				if(!tcp_udp->enabled) */
+		/* 					{ */
+		/* 						debug_print("tcp_udp disabled, activating new_row\n"); */
+		/* 						new_row->enabled = TRUE; */
+		/* 						yaup->rows = g_slist_append (yaup->rows,new_row); */
+		/* 					} */
+		/* 				else */
+		/* 					{ */
 								/* remove_list_item(&new_row, yaup); */
-							}
-					}
-				else
-					{
-						debug_print("Found nothing similar, activating new row\n");
-						new_row->enabled = TRUE;
-						yaup->rows = g_slist_append (yaup->rows,new_row);
-					}
+		/* 					} */
+		/* 			} */
+		/* 		else if(follow_up != NULL */
+		/* 						&& counterpart == NULL */
+		/* 						&& old_row == NULL */
+		/* 						&& tcp_udp == NULL) */
+		/* 			{ */
+		/* 				debug_print("Found a range. Remove new_row, setting old oport2 + 1\n"); */
+		/* 				yaup->rows = g_slist_remove(yaup->rows, new_row); */
+		/* 				new_row->oport2 = new_row->oport2 + 1; */
+		/* 			} */
+		/* 		else */
+		/* 			{ */
+		/* 				debug_print("Found nothing similar, activating new row\n"); */
+		/* 				new_row->enabled = TRUE; */
+		/* 				yaup->rows = g_slist_append (yaup->rows,new_row); */
+		/* 			} */
 			}
 		else
 			{
-				/* debug_print("No other rows found with error %d\n", r); */
+				debug_print("No other rows found with error %d\n", r);
 				//debug_print("GetGenericPortMappingEntry() returned %d (%s)\n",
 				//r, strupnperror(r));
 			}
@@ -536,8 +569,15 @@ upnp_set_redirect_finish (GObject      *source_object,
 						                 yaup->statusbar_error_id,
 						                 str);
 
-					add_list_item_from_config(TRUE, yaup->row->name, yaup->row->iport, yaup->row->ip, yaup->row->oport,
-																		"UDP", yaup->row->index + 1, yaup);
+					add_list_item_from_config(TRUE,
+																		yaup->row->name,
+																		yaup->row->iport,
+																		yaup->row->ip,
+																		yaup->row->oport,
+																		yaup->row->oport2,
+																		"UDP",
+																		yaup->row->index + 1,
+																		yaup);
 
 					disable_row (yaup->row, yaup);
 					break;
@@ -550,8 +590,15 @@ upnp_set_redirect_finish (GObject      *source_object,
 						                 yaup->statusbar_error_id,
 						                 str);
 
-					add_list_item_from_config(TRUE, yaup->row->name, yaup->row->iport, yaup->row->ip, yaup->row->oport,
-						                        "TCP", yaup->row->index + 1, yaup);
+					add_list_item_from_config(TRUE,
+																		yaup->row->name,
+																		yaup->row->iport,
+																		yaup->row->ip,
+																		yaup->row->oport,
+																		yaup->row->oport2,
+						                        "TCP",
+																		yaup->row->index + 1,
+																		yaup);
 
 					disable_row (yaup->row, yaup);
 					break;
@@ -598,14 +645,11 @@ upnp_set_redirect(GTask        *task,
 	char	intClient[40];
 	char	intPort[6];
 	char	duration[16];
-	char	ibuffer[6];
-	char	obuffer[6];
+	char	ibuffer[6], obuffer[6];
 	int		ret1, ret2;
 	char	leaseDuration[] = "0";
 
 	yaup = task_data;
-	sprintf(ibuffer, "%i", yaup->row->iport);
-	sprintf(obuffer, "%i", yaup->row->oport);
 	ret1 = UPNPCOMMAND_SUCCESS;
 	ret2 = UPNPCOMMAND_SUCCESS;
 
@@ -626,99 +670,133 @@ upnp_set_redirect(GTask        *task,
 		}
 
 	ret1 = UPNP_GetExternalIPAddress(yaup->controlURL,
-				      yaup->igddata.first.servicetype,
-				      yaup->externalIPAddress);
+																	 yaup->igddata.first.servicetype,
+																	 externalIPAddress);
 	if(ret1 != UPNPCOMMAND_SUCCESS)
 		{
 			debug_print("GetExternalIPAddress failed.\n");
 		}
 	else
 		{
-			debug_print("ExternalIPAddress = %s\n", yaup->externalIPAddress);
+			debug_print("ExternalIPAddress = %s\n", externalIPAddress);
 		}
 
 	ret1 = UPNPCOMMAND_SUCCESS;
 
-	if(strcmp(yaup->row->protocol, "TCP & UDP") == 0)
+	for(int i = 0;
+			i <= yaup->row->oport2 - yaup->row->oport;
+			i++)
 		{
-		  ret1 = UPNP_AddPortMapping(yaup->controlURL, yaup->igddata.first.servicetype,
-					obuffer, ibuffer, yaup->row->ip, yaup->row->name,
-					"TCP", 0, leaseDuration);
-		  ret2 = UPNP_AddPortMapping(yaup->controlURL, yaup->igddata.first.servicetype,
-					obuffer, ibuffer, yaup->row->ip, yaup->row->name,
-					"UDP", 0, leaseDuration);
+			sprintf(ibuffer, "%i", yaup->row->iport + i);
+			sprintf(obuffer, "%i", yaup->row->oport + i);
 
-		}
-	else
-		{
-		  ret1 = UPNP_AddPortMapping(yaup->controlURL, yaup->igddata.first.servicetype,
-					obuffer, ibuffer, yaup->row->ip, yaup->row->name,
-					yaup->row->protocol, 0, leaseDuration);
+			if(strcmp(yaup->row->protocol, "TCP & UDP") == 0)
+				{
+					ret1 = UPNP_AddPortMapping(yaup->controlURL,
+																		 yaup->igddata.first.servicetype,
+																		 obuffer,
+																		 ibuffer,
+																		 yaup->row->ip,
+																		 yaup->row->name,
+																		 "TCP",
+																		 0,
+																		 leaseDuration);
+					ret2 = UPNP_AddPortMapping(yaup->controlURL,
+																		 yaup->igddata.first.servicetype,
+																		 obuffer,
+																		 ibuffer,
+																		 yaup->row->ip,
+																		 yaup->row->name,
+																		 "UDP",
+																		 0,
+																		 leaseDuration);
+				}
+			else
+				{
+					ret1 = UPNP_AddPortMapping(yaup->controlURL,
+																		 yaup->igddata.first.servicetype,
+																		 obuffer,
+																		 ibuffer,
+																		 yaup->row->ip,
+																		 yaup->row->name,
+																		 yaup->row->protocol,
+																		 0,
+																		 leaseDuration);
 
-		}
+				}
 
 
-	if(ret1!=UPNPCOMMAND_SUCCESS)
-		{
-			debug_print("AddPortMapping(%s, %s, %s) failed with code %d (%s)\n",
-			       obuffer, ibuffer, yaup->row->ip, ret1, strupnperror(ret1));
-		}
+			if(ret1!=UPNPCOMMAND_SUCCESS)
+				{
+					debug_print("AddPortMapping(%s, %s, %s) failed with code %d (%s)\n",
+											obuffer,
+											ibuffer,
+											yaup->row->ip,
+											ret1,
+											strupnperror(ret1));
+				}
 
-	if(ret2!=UPNPCOMMAND_SUCCESS)
-		{
-			debug_print("AddPortMapping(%s, %s, %s) failed with code %d (%s)\n",
-			       obuffer, ibuffer, yaup->row->ip, ret2, strupnperror(ret2));
-		}
+			if(ret2!=UPNPCOMMAND_SUCCESS)
+				{
+					debug_print("AddPortMapping(%s, %s, %s) failed with code %d (%s)\n",
+											obuffer,
+											ibuffer,
+											yaup->row->ip,
+											ret2,
+											strupnperror(ret2));
+				}
 
-	if(strcmp(yaup->row->protocol, "TCP & UDP") == 0)
-		{
-			ret1 = UPNP_GetSpecificPortMappingEntry(yaup->controlURL,
-					     yaup->igddata.first.servicetype,
-					     obuffer, "TCP", NULL/*remoteHost*/,
-					     intClient, intPort, NULL/*desc*/,
-					     NULL/*enabled*/, duration);
-			ret2 = UPNP_GetSpecificPortMappingEntry(yaup->controlURL,
-					     yaup->igddata.first.servicetype,
-					     obuffer, "UDP", NULL/*remoteHost*/,
-					     intClient, intPort, NULL/*desc*/,
-					     NULL/*enabled*/, duration);
+			if(strcmp(yaup->row->protocol, "TCP & UDP") == 0)
+				{
+					ret1 = UPNP_GetSpecificPortMappingEntry(yaup->controlURL,
+									 yaup->igddata.first.servicetype,
+									 obuffer, "TCP", NULL/*remoteHost*/,
+									 intClient, intPort, NULL/*desc*/,
+									 NULL/*enabled*/, duration);
+					ret2 = UPNP_GetSpecificPortMappingEntry(yaup->controlURL,
+									 yaup->igddata.first.servicetype,
+									 obuffer, "UDP", NULL/*remoteHost*/,
+									 intClient, intPort, NULL/*desc*/,
+									 NULL/*enabled*/, duration);
 
-			if(ret2 != UPNPCOMMAND_SUCCESS)
+					if(ret2 != UPNPCOMMAND_SUCCESS)
+						{
+							debug_print("GetSpecificPortMappingEntry() failed with code %d (%s)\n",
+										 ret2, strupnperror(ret2));
+							//return r;
+						}
+						else {
+							debug_print("InternalIP:Port = %s:%s\n", intClient, intPort);
+							debug_print("external %s:%s %s is redirected to internal %s:%s (duration=%s)\n",
+										 externalIPAddress, obuffer, yaup->row->protocol, intClient, intPort, duration);
+						}
+				}
+			else
+				{
+					ret1 = UPNP_GetSpecificPortMappingEntry(yaup->controlURL,
+									 yaup->igddata.first.servicetype,
+									 obuffer, yaup->row->protocol, NULL/*remoteHost*/,
+									 intClient, intPort, NULL/*desc*/,
+									 NULL/*enabled*/, duration);
+				}
+
+			if(ret1 != UPNPCOMMAND_SUCCESS)
 				{
 					debug_print("GetSpecificPortMappingEntry() failed with code %d (%s)\n",
-								 ret2, strupnperror(ret2));
-					//return r;
+											ret1, strupnperror(ret1));
+					/* return r; */
 				}
-				else {
+			else
+				{
 					debug_print("InternalIP:Port = %s:%s\n", intClient, intPort);
-					debug_print("external %s:%s %s is redirected to internal %s:%s (duration=%s)\n",
-								 externalIPAddress, obuffer, yaup->row->protocol, intClient, intPort, duration);
+					debug_print("external %s:%s %s is redirected to internal %s:%s \
+											(duration=%s)\n", externalIPAddress, obuffer,
+											yaup->row->protocol, intClient, intPort, duration);
 				}
-		}
-	else
-		{
-			ret1 = UPNP_GetSpecificPortMappingEntry(yaup->controlURL,
-					     yaup->igddata.first.servicetype,
-					     obuffer, yaup->row->protocol, NULL/*remoteHost*/,
-					     intClient, intPort, NULL/*desc*/,
-					     NULL/*enabled*/, duration);
-		}
-
-	if(ret1 != UPNPCOMMAND_SUCCESS)
-		{
-			debug_print("GetSpecificPortMappingEntry() failed with code %d (%s)\n",
-									ret1, strupnperror(ret1));
-			/* return r; */
-		}
-	else
-		{
-			debug_print("InternalIP:Port = %s:%s\n", intClient, intPort);
-			debug_print("external %s:%s %s is redirected to internal %s:%s \
-									(duration=%s)\n", externalIPAddress, obuffer,
-									yaup->row->protocol, intClient, intPort, duration);
 		}
 
 	/* return UPNPCOMMAND_SUCCESS; */
+	//TODO:Make this usefull
 
 	if(UPNPCOMMAND_SUCCESS == ret1 && UPNPCOMMAND_SUCCESS == ret2 )
 		{
@@ -815,9 +893,15 @@ upnp_remove_redirect_finish (GObject      *source_object,
 				                     yaup->statusbar_error_id,
 				                     str);
 
-				  add_list_item_from_config(TRUE, yaup->row->name, yaup->row->iport,
-																		yaup->row->ip, yaup->row->oport,
-				                            "UDP", yaup->row->index + 1, yaup);
+				  add_list_item_from_config(TRUE,
+																		yaup->row->name,
+																		yaup->row->iport,
+																		yaup->row->ip,
+																		yaup->row->oport,
+																		yaup->row->oport2,
+				                            "UDP",
+																		yaup->row->index + 1,
+																		yaup);
 
 				  disable_row (yaup->row, yaup);
 					break;
@@ -831,9 +915,15 @@ upnp_remove_redirect_finish (GObject      *source_object,
 				                     yaup->statusbar_error_id,
 				                     str);
 
-				  add_list_item_from_config(TRUE,	yaup->row->name, yaup->row->iport,
-																		yaup->row->ip, yaup->row->oport,
-				                            "TCP", yaup->row->index + 1, yaup);
+				  add_list_item_from_config(TRUE,
+																		yaup->row->name,
+																		yaup->row->iport,
+																		yaup->row->ip,
+																		yaup->row->oport,
+																		yaup->row->oport2,
+				                            "TCP",
+																		yaup->row->index + 1,
+																		yaup);
 
 				  disable_row (yaup->row, yaup);
 					break;
@@ -868,29 +958,40 @@ upnp_remove_redirect(GTask        *task,
 {
 	Yaup *yaup = (Yaup *) task_data;
   char ebuffer[33];
-  sprintf(ebuffer, "%d", yaup->row->oport);
-  int ret1 = 0;
-  int ret2 = 0;
+  int ret1 = 0, ret2 = 0;
 	char remoteHost[2] = "\0";
 
-	if(strcmp(yaup->row->protocol, "TCP & UDP") == 0)
-    {
-      ret1 = UPNP_DeletePortMapping(yaup->controlURL,
-																		yaup->igddata.first.servicetype,
-																		ebuffer, "TCP", remoteHost);
-      ret2 = UPNP_DeletePortMapping(yaup->controlURL,
-																		yaup->igddata.first.servicetype,
-																		ebuffer, "UDP", remoteHost);
+	for(int i = 0;
+			i <= yaup->row->oport2 - yaup->row->oport;
+			i++)
+		{
+			sprintf(ebuffer, "%d", yaup->row->oport + i);
 
-    }
-  else
-    {
-			ret1 = UPNP_DeletePortMapping(yaup->controlURL,
-																		yaup->igddata.first.servicetype,
-																		ebuffer, yaup->row->protocol, remoteHost);
+			if(strcmp(yaup->row->protocol, "TCP & UDP") == 0)
+				{
+				  ret1 = UPNP_DeletePortMapping(yaup->controlURL,
+																				yaup->igddata.first.servicetype,
+																				ebuffer,
+																				"TCP",
+																				remoteHost);
+				  ret2 = UPNP_DeletePortMapping(yaup->controlURL,
+																				yaup->igddata.first.servicetype,
+																				ebuffer,
+																				"UDP",
+																				remoteHost);
 
-    }
+				}
+			else
+				{
+					ret1 = UPNP_DeletePortMapping(yaup->controlURL,
+																				yaup->igddata.first.servicetype,
+																				ebuffer,
+																				yaup->row->protocol,
+																				remoteHost);
+				}
+		}
 
+	//TODO: Make this usefull
 	if( 0 == ret1 && 0 == ret2)
     {
 			// success

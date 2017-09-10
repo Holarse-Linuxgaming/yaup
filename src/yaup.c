@@ -33,6 +33,7 @@
 /* Pass TRUE to your compiler to use the resource file, previously generated
  * with "glib-compile-resources --generate-source resources.gresource.xml"
  * example: gcc -o yaup yaup.c -DRESOURCE=TRUE
+ * or: make CFLAGS='-DDEBUG -DRESOURCE=TRUE'
  */
 #ifndef RESOURCE
 	#define RESOURCE FALSE

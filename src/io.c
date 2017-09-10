@@ -33,102 +33,125 @@ read_config (Yaup *yaup)
 	GET_UI_ELEMENT (GtkComboBox, combo_control_url);
 
 	if( g_file_test(yaup->config_dir,G_FILE_TEST_IS_DIR))
-	{
-		// file exists
-		debug_print("dir exists\n");
-	}
+		{
+			// file exists
+			debug_print("dir exists\n");
+		}
 	else
-	{
-		// file doesn't exist
-		debug_print("dir doesnt exist at %s\n", yaup->config_file);
-		gtk_statusbar_push (statusbar,
-							yaup->statusbar_error_id,
-							"Directory doesnt exist");
-		g_timeout_add_seconds (5, statusbar_refresh_error, yaup);
-		g_mkdir_with_parents (yaup->config_dir,0744);
-		debug_print("dir created\n");
-	}
+		{
+			// file doesn't exist
+			debug_print("dir doesnt exist at %s\n", yaup->config_file);
+			gtk_statusbar_push (statusbar,
+								yaup->statusbar_error_id,
+								"Directory doesnt exist");
+			g_timeout_add_seconds (5, statusbar_refresh_error, yaup);
+			g_mkdir_with_parents (yaup->config_dir,0744);
+			debug_print("dir created\n");
+		}
 
 	if( g_file_test(yaup->config_file,G_FILE_TEST_EXISTS))
-	{
-		// file exists
-		debug_print("file exists\n");
-		GKeyFile	*conf;
-		gchar			**groups;
-		char			*buffer;
-		gboolean  test = FALSE;
-		int				i = 0;
-
-		conf = g_key_file_new();
-
-		g_key_file_load_from_file (conf,yaup->config_file,G_KEY_FILE_NONE,NULL);
-		groups = g_key_file_get_groups(conf,NULL);
-
-		strcpy(yaup->my_controlURL, g_key_file_get_string(conf, "general", "controlURL", NULL));
-
-		/* set the found controlURL or the specified */
-		for(i = 0;
-				(buffer = g_slist_nth_data (yaup->controlURLs, i)) != NULL;
-				i++)
 		{
-			if(strcmp(yaup->my_controlURL, buffer) == 0)
+			// file exists
+			debug_print("file exists\n");
+			GKeyFile	*conf;
+			gchar			**groups;
+			char			*buffer;
+			gboolean  test = FALSE;
+			int				i = 0;
+
+			conf = g_key_file_new();
+
+			g_key_file_load_from_file (conf,yaup->config_file,G_KEY_FILE_NONE,NULL);
+			groups = g_key_file_get_groups(conf,NULL);
+
+			strcpy(yaup->my_controlURL, g_key_file_get_string(conf,
+																												"general",
+																												"controlURL",
+																												NULL));
+
+			/* set the found controlURL or the specified */
+			for(i = 0;
+					(buffer = g_slist_nth_data (yaup->controlURLs, i)) != NULL;
+					i++)
 				{
-					gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_control_url), FALSE);
-					gtk_combo_box_set_active (combo_control_url, i);
-					test = TRUE;
+					if(strcmp(yaup->my_controlURL, buffer) == 0)
+						{
+							gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_control_url),
+																					 FALSE);
+							gtk_combo_box_set_active (combo_control_url, i);
+							test = TRUE;
+						}
 				}
-		}
 
 		if(test == FALSE)
 			{
-				gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT(combo_control_url), yaup->my_controlURL);
+				gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT(combo_control_url),
+																				yaup->my_controlURL);
 				gtk_combo_box_set_active(combo_control_url, i);
-				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_control_url), TRUE);
+				gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_control_url),
+																		 TRUE);
 
 			}
 
 		for (int i = 1; groups[i] != NULL; i++)
 			{
 				char *protocol;
-				int iport, oport;
+				int iport, oport, oport2;
 				char *name;
 				char *ip;
 
 				name = g_key_file_get_string (conf,groups[i],
-												"name",
-												NULL);
+																			"name",
+																			NULL);
 				protocol = g_key_file_get_string (conf,groups[i],
-													"protocol",
-													NULL);
+																					"protocol",
+																					NULL);
 				oport = g_key_file_get_integer (conf,groups[i],
-												"external_port",
-												NULL);
+																				"external_port",
+																				NULL);
+				oport2 = g_key_file_get_integer (conf,groups[i],
+																				 "external_port_range",
+																				 NULL);
+				if(oport2 == 0)
+					{
+						oport2 = oport;
+					}
+
 				iport = g_key_file_get_integer (conf,groups[i],
-												"internal_port",
-												NULL);
+																				"internal_port",
+																				NULL);
 				ip = g_key_file_get_string (conf,groups[i],
-												"ip",
-												NULL);
+																		"ip",
+																		NULL);
 
 				//TODO: Key file get error
 
-				add_list_item_from_config (FALSE, name, iport, ip, oport,
-																	 protocol, i, yaup);
+				debug_print("Generating row for config %s\n", name);
+				add_list_item_from_config (FALSE,
+																	 name,
+																	 iport,
+																	 ip,
+																	 oport,
+																	 oport2,
+																	 protocol,
+																	 i,
+																	 yaup);
 			}
 
-		g_key_file_free (conf);
-	}
+			debug_print("Done reading save file\n");
+			g_key_file_free (conf);
+		}
 	else
-	{
-		// file doesn't exist
-		debug_print("file doesnt exist at %s\n", yaup->config_file);
-		gtk_statusbar_push (statusbar,
-							yaup->statusbar_error_id,
-							"Config file doesnt exist");
-		g_timeout_add_seconds (5, statusbar_refresh_error, yaup);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_control_url), FALSE);
-		gtk_combo_box_set_active (combo_control_url, 0);
-	}
+		{
+			// file doesn't exist
+			debug_print("file doesnt exist at %s\n", yaup->config_file);
+			gtk_statusbar_push (statusbar,
+													yaup->statusbar_error_id,
+													"Config file doesnt exist");
+			g_timeout_add_seconds (5, statusbar_refresh_error, yaup);
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check_control_url), FALSE);
+			gtk_combo_box_set_active (combo_control_url, 0);
+		}
 }
 
 void
@@ -144,7 +167,7 @@ write_config (Yaup *yaup)
 	if( g_file_test(yaup->config_dir, G_FILE_TEST_IS_DIR))
 	{
 		// file exists
-		debug_print("dir exists");
+		debug_print("dir exists\n");
 	}
 	else
 	{
@@ -169,6 +192,7 @@ write_config (Yaup *yaup)
 			g_key_file_set_integer (conf,j,"internal_port",row->iport);
 			g_key_file_set_string (conf,j,"ip",row->ip);
 			g_key_file_set_integer (conf,j,"external_port",row->oport);
+			g_key_file_set_integer (conf,j,"external_port_range",row->oport2);
 			g_key_file_set_string (conf,j,"protocol",row->protocol);
 	  }
 

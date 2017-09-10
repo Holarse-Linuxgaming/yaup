@@ -58,12 +58,16 @@ void on_check_iport_toggled (GtkToggleButton *togglebutton,
                              Yaup            *yaup);
 void on_check_ip_toggled (GtkToggleButton *togglebutton,
                           Yaup            *yaup);
+void on_check_range_toggled(GtkToggleButton *togglebutton,
+                            Yaup            *yaup);
 void on_check_control_url_toggled (GtkToggleButton *togglebutton,
                                    Yaup            *yaup);
 void on_ispin_button_value_changed(GtkSpinButton *spin_button,
                                   Yaup           *yaup);
 void on_ospin_button_value_changed(GtkSpinButton *spin_button,
                                   Yaup           *yaup);
+void on_ospin2_button_value_changed(GtkSpinButton *spin_button,
+                                    Yaup          *yaup);
 void on_info_bar_response (GtkInfoBar *info_bar,
                            gint        response_id,
                            Yaup       *yaup);

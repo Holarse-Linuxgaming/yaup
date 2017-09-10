@@ -36,8 +36,10 @@ typedef struct row_
 	GtkEntry				*entry_ip;
 	GtkCheckButton	*check_ip;
 	GtkCheckButton	*check_iport;
+	GtkCheckButton	*check_range;
 	GtkSpinButton		*ispin;
   GtkSpinButton		*ospin;
+	GtkSpinButton		*ospin2;
   GtkComboBoxText	*combo;
 	GtkButton				*bt_remove;
 	GtkButton				*bt_up;
@@ -47,10 +49,12 @@ typedef struct row_
 	GtkMenuButton		*bt_iport;
   gboolean				enabled;
 	gboolean				iport_enabled;
+	gboolean				oport2_enabled;
 	gboolean				ip_enabled;
   char						name[80];
   int							iport;
   int							oport;
+	int							oport2;
   char						protocol[10];
   int							index;
 	char						ip[64];
