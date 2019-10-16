@@ -506,8 +506,8 @@ upnp_set_redirect_finish (GObject      *source_object,
 
 					char str[80];
 					sprintf(str, _("Activated external %i to internal %i for %s to %s"),
-						      yaup->row->iport,
 						      yaup->row->oport,
+						      yaup->row->iport,
 						      yaup->row->protocol,
 									yaup->row->ip);
 
@@ -782,8 +782,8 @@ upnp_remove_redirect_finish (GObject      *source_object,
 
 				  char str[80];
 				  sprintf(str, _("Removed external %i to internal %i for %s"),
-				          yaup->row->iport,
 				          yaup->row->oport,
+				          yaup->row->iport,
 				          yaup->row->protocol);
 
 				  gtk_statusbar_push(statusbar,
