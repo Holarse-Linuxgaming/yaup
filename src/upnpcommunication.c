@@ -172,11 +172,21 @@ upnp_get_devices(GTask        *task,
 																										 &yaup->igddata,
 																										 yaup->local_ip,
 																										 sizeof(yaup->local_ip)))
+#if MINIUPNPC_API_VERSION >= 18
+								|| (i = UPNP_GetValidIGD(yaup->device,
+																				 &yaup->urls,
+																				 &yaup->igddata,
+																				 yaup->local_ip,
+																				 sizeof(yaup->local_ip),
+																				 NULL,
+																				 0)))
+#else
 								|| (i = UPNP_GetValidIGD(yaup->device,
 																				 &yaup->urls,
 																				 &yaup->igddata,
 																				 yaup->local_ip,
 																				 sizeof(yaup->local_ip))))
+#endif
 								{
 									switch(i)
 										{
@@ -186,14 +196,31 @@ upnp_get_devices(GTask        *task,
 																			yaup->urls.controlURL);
 													break;
 												}
+#if MINIUPNPC_API_VERSION >= 18
 										case 2:
+												{
+													debug_print("Found a (reserved?) IGD : %s\n",
+																			yaup->urls.controlURL);
+													debug_print("Trying to continue anyway\n");
+													break;
+												}
+#endif
+#if MINIUPNPC_API_VERSION >= 18
+										case 3:
+#else
+										case 2:
+#endif
 												{
 													debug_print("Found a (not connected?) IGD : %s\n",
 																			yaup->urls.controlURL);
 													debug_print("Trying to continue anyway\n");
 													break;
 												}
+#if MINIUPNPC_API_VERSION >= 18
+										case 4:
+#else
 										case 3:
+#endif
 												{
 													debug_print("UPnP device found. "
 																			"Is it an IGD ? : %s\n",
