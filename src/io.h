@@ -22,7 +22,7 @@
 
 #include "yaup.h"
 
-void write_config();
-void read_config();
+void write_config(Yaup*);
+void read_config(Yaup*);
 gboolean statusbar_refresh_error(gpointer);
 gboolean statusbar_refresh_notice(gpointer);
